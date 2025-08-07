@@ -1,0 +1,13 @@
+{
+  "api": {
+    "version": "v1",
+    "base_path": "/api",
+    "endpoints": {
+      "ping": {
+        "path": "/ping",
+        "handler": "no_handler",
+        "data": { "status": "pong!" }
+      }
+    }
+  }
+}
