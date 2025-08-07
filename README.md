@@ -12,8 +12,8 @@ Ensure you have Python 3.10 or newer installed.
 
 1.  Clone this repository:
     ```bash
-    git clone [Your Repository URL]
-    cd [Your Project Name]
+    git clone https://github.com/kenthic/template.git
+    cd template
     ```
 
 2.  Install the required Python packages:

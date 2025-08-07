@@ -1,0 +1,26 @@
+{
+  "info": {
+    "name": "Dynamic FastAPI Template",
+    "version": {
+        "major": 1,
+        "minor": 0,
+        "patch": 0
+    },
+    "author": {
+        "name": "kenTHiC",
+        "email": "kenthic86@gmail.com",
+        "url": "https://kenthic.github.io"
+    },
+    "description": "A highly modular and scalable web framework built with FastAPI.",
+    "license": "CC0-1.0",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/kenthic/template.git"
+  }
+},
+  "website": {
+    "title": "Dynamic Website Template Framework",
+    "meta_description": "A dynamic dashboard powered by a configurable FastAPI backend.",
+    "meta_keywords": ["FastAPI", "web framework", "dashboard"]
+  }
+}
