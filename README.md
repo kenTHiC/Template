@@ -23,14 +23,33 @@ Ensure you have Python 3.10 or newer installed.
 
 ### Running the Server
 
-Navigate to the project's root directory and start the server with the following command:
+Navigate to the project's root directory and start the server with the following command. The server will use the host and port defined in your `config.json` by default.
 
 ```bash
+# Start server with default configuration
 python app/main.py
+
+# Override server host and port
+python app/main.py -s 0.0.0.0 -p 5021
+
+# Load a custom API configuration file
+python app/main.py -c custom-api.json
 ```
-The server will start on the host and port defined in your `config.json`, with `http://127.0.0.1:5500` as the default.
+
+---
 
 ## ⚙️ Configuration
+
+Server settings and API endpoints are controlled by `config.json`. If this file is not found, the server will fall back to `app/fallback.json`.
+
+**Application Metadata (`app.json`)**
+
+For the website title, metadata, and project information, the application uses `app.json`. If this file does not exist, the server will use fallback values.
+
+To create `app.json` easily, use the guided assistant:
+```bash
+python app/main.py --init
+```
 
 API endpoints and server settings are controlled by `config.json`. If this file is not found or is invalid, the server will fall back to `app/fallback.json`.
 
@@ -46,6 +65,21 @@ Example for an endpoint:
     "handler": "get_config_handler"
   }
 }
+```
+
+or use a custom API config by using a custom `custom-api.json`.
+```json
+  "api": {
+    "version": "v1",
+    "base_path": "/api",
+    "endpoints": {
+      "ping": {
+        "path": "/ping",
+        "handler": "no_handler",
+        "data": { "status": "pong!" }
+      }
+    }
+  }
 ```
 
 ## 📝 License
