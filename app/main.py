@@ -97,37 +97,39 @@ def load_config(config_path: Path = None):
         },
         "features": { "enable_dashboard": False, "enable_terminal": False }
     }
-
+    
+    # 1. Zuerst die Standard-Konfiguration (oder Fallback) laden
     temp_config = {}
-    if config_path and config_path.exists():
+    try:
+        with open(CONFIG_FILE, "r") as f:
+            temp_config = json.load(f)
+        logger.info("Standard configuration loaded successfully.")
+    except (FileNotFoundError, json.JSONDecodeError) as e:
+        logger.warning(f"Error loading {CONFIG_FILE}. Attempting to load fallback configuration...")
         try:
-            with open(config_path, "r") as f:
+            with open(FALLBACK_CONFIG_FILE, "r") as f:
                 temp_config = json.load(f)
-            logger.info(f"Loaded custom config from {config_path}")
+            logger.info("Fallback configuration loaded successfully.")
         except (FileNotFoundError, json.JSONDecodeError) as e:
-            logger.error(f"Error loading custom config {config_path}: {e}")
-    else:
-        try:
-            logger.info(f"Loading configuration from {CONFIG_FILE.resolve()}")
-            with open(CONFIG_FILE, "r") as f:
-                temp_config = json.load(f)
-            logger.info("Configuration loaded successfully.")
-        except (FileNotFoundError, json.JSONDecodeError) as e:
-            logger.warning(f"Error loading {CONFIG_FILE}. Attempting to load fallback configuration...")
-            try:
-                with open(FALLBACK_CONFIG_FILE, "r") as f:
-                    temp_config = json.load(f)
-                logger.info("Fallback configuration loaded successfully.")
-            except (FileNotFoundError, json.JSONDecodeError) as e:
-                logger.error(f"Error: {FALLBACK_CONFIG_FILE} not found or is invalid. Using fallback.")
-                temp_config = hardcoded_fallback
+            logger.error(f"Error: {FALLBACK_CONFIG_FILE} not found or is invalid. Using fallback.")
+            temp_config = hardcoded_fallback
 
     app_config = hardcoded_fallback.copy()
     if temp_config:
         app_config["server"].update(temp_config.get("server", {}))
         app_config["api"].update(temp_config.get("api", {}))
         app_config["features"].update(temp_config.get("features", {}))
-
+        
+    # 2. Dann die benutzerdefinierte Konfiguration (aus -c) laden und nur die API überschreiben
+    if config_path and config_path.exists():
+        try:
+            with open(config_path, "r") as f:
+                custom_config = json.load(f)
+            if custom_config.get("api"):
+                app_config["api"].update(custom_config["api"])
+                logger.info(f"Custom API configuration from {config_path} applied.")
+        except (FileNotFoundError, json.JSONDecodeError) as e:
+            logger.error(f"Error loading custom config {config_path}: {e}")
 
 # --- Main Application Logic ---
 # Register the index.html endpoint
