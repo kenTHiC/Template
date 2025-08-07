@@ -1,0 +1,21 @@
+# Python-spezifische Dateien und Ordner
+app/__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Betriebssystem-spezifische Dateien
+.DS_Store
+Thumbs.db
+
+# Abhängigkeiten, die automatisch installiert werden
+venv/
+env/
+.env/
+
+# Temporäre Dateien
+.pytest_cache/
+.vscode/
+
+# Logs
+*.log

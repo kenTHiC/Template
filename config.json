@@ -1,0 +1,46 @@
+{
+  "server": {
+    "host": "127.0.0.1",
+    "port": 5500,
+    "debug": false,
+    "log_level": "info",
+    "static_files": {
+      "enabled": true,
+      "directory": "./static"
+    },
+    "cors": {
+      "enabled": true,
+      "origins": ["*"],
+      "methods": ["GET", "POST", "PUT", "DELETE"],
+      "headers": ["Content-Type", "Authorization"]
+    },
+    "output": {
+      "format": "json",
+      "pretty_print": true
+    },
+    "messages": {
+        "colored_logs": true,
+        "config": "/config",
+        "module": "srv-colors.json"
+    }
+  },
+  "api": {
+    "version": "v1",
+    "base_path": "/api",
+    "endpoints": {
+      "config": {
+        "path": "/config", 
+        "handler": "get_config_handler"
+      },
+      "stats": {
+        "path": "/stats", 
+        "handler": "get_stats_handler",
+        "data": { "total_users": 1, "active_sessions": 1 }
+      }
+    }
+  },
+  "features": {
+    "enable_dashboard": true,
+    "enable_terminal": false
+  }
+}
