@@ -76,6 +76,7 @@ def load_app_info():
         logger.info("Application info loaded successfully.")
     except (FileNotFoundError, json.JSONDecodeError) as e:
         logger.error(f"Error loading {APP_INFO_FILE}: {e}")
+        logger.warning("Using fallback values for app info.\nUse 'python app/main.py --init' to create the file.")
         app_info = {
             "info": {"name": "Template-App", "version": {"major": 1,"minor": 0,"patch": 0}},
             "website": {"title": "Default Title", "meta_description": "Default Description", "meta_keywords": []}
@@ -131,6 +132,36 @@ def load_config(config_path: Path = None):
         except (FileNotFoundError, json.JSONDecodeError) as e:
             logger.error(f"Error loading custom config {config_path}: {e}")
 
+# --- Interactive CLI Helper ---
+def initialize_app_json():
+    """Interactive assistant to create a new app.json file."""
+    print("\n--- App.json Initialization Wizard ---")
+    print("Please answer the following questions to create an 'app.json'.")
+    
+    info = {}
+    info["name"] = input("Project name (e.g. 'My Cool App'): ")
+    info["author"] = {"name": input("Your name: ")}
+    info["version"] = {"major": 1, "minor": 0, "patch": 0}
+    info["description"] = input("A brief description of the project: ")
+    info["license"] = input("License (e.g. 'MIT' or 'CC0-1.0'): ")
+    info["repository"] = {"url": input("Repository URL: ")}
+
+    website = {}
+    website["title"] = input("Title for the website: ")
+    website["meta_description"] = input("Meta description for SEO: ")
+    website["meta_keywords"] = input("Keywords (comma separated): ").split(',')
+
+    new_app_json = {"info": info, "website": website}
+    
+    try:
+        with open(APP_INFO_FILE, "w") as f:
+            json.dump(new_app_json, f, indent=2)
+        print(f"\napp.json successfully created under '{APP_INFO_FILE.resolve()}'!")
+    except IOError as e:
+        print(f"\nError writing file: {e}")
+        
+    sys.exit(0)
+
 # --- Main Application Logic ---
 # Register the index.html endpoint
 @app.get("/")
@@ -158,16 +189,20 @@ Examples:
 
     args = parser.parse_args()
 
-    # Load configurations based on parsed arguments
-    load_app_info()
-    load_config(config_path=args.config_file)
-    setup_dynamic_routes()
+    # If the --init argument is present, run the assistant and exit
+    if args.init:
+        initialize_app_json()
+    else:
+        # Load configurations based on parsed arguments
+        load_app_info()
+        load_config(config_path=args.config_file)
+        setup_dynamic_routes()
 
-    # Get server settings, using command-line arguments if provided
-    server_host = args.host if args.host else app_config.get("server", {}).get("host", "127.0.0.1")
-    server_port = args.port if args.port else app_config.get("server", {}).get("port", 8080)
-    server_reload = app_config.get("server", {}).get("debug", False)
-    log_level = app_config.get("server", {}).get("log_level", "info")
-    
-    logger.info(f"Starting server on http://{server_host}:{server_port}")
-    uvicorn.run(app, host=server_host, port=server_port, reload=server_reload, log_level=log_level)
+        # Get server settings, using command-line arguments if provided
+        server_host = args.host if args.host else app_config.get("server", {}).get("host", "127.0.0.1")
+        server_port = args.port if args.port else app_config.get("server", {}).get("port", 8080)
+        server_reload = app_config.get("server", {}).get("debug", False)
+        log_level = app_config.get("server", {}).get("log_level", "info")
+        
+        logger.info(f"Starting server on http://{server_host}:{server_port}")
+        uvicorn.run(app, host=server_host, port=server_port, reload=server_reload, log_level=log_level)
